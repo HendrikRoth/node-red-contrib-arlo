@@ -1,0 +1,341 @@
+<script type='text/javascript'>
+	RED.nodes.registerType('arlo-config', {
+		category: 'config',
+		defaults: {
+			name: {
+				value: '',
+				require: false
+			}
+		},
+		credentials: {
+			username: {
+				type: 'text'
+			},
+			password: {
+				type: 'password'
+			}
+		},
+		label: function() {
+			return this.name ? this.name : 'Arlo'
+		}
+	})
+</script>
+
+<script type='text/x-red' data-template-name='arlo-config'>
+    <div class='form-row'>
+        <label for='node-config-input-name'><i class='fa fa-tag'></i> Name</label>
+        <input type='text' id='node-config-input-name'/>
+    </div>
+    <div class='form-row'>
+        <label for='node-config-input-username'><i class='fa fa-user'></i> Username</label>
+        <input type='text' id='node-config-input-username' />
+    </div>
+    <div class='form-row'>
+        <label for='node-config-input-password'><i class='fa fa-key'></i> Password</label>
+        <input type='password' id='node-config-input-password' />
+    </div>
+</script>
+
+<script type='text/javascript'>
+  RED.nodes.registerType('arlo-in', {
+	category: 'arlo',
+	paletteLabel: 'Arlo In',
+	color: '#06a84e',
+	defaults: {
+		name: {
+			value: '',
+			required: false
+		},
+		service: {
+			type: 'arlo-config',
+			required: true
+		},
+		device: {
+			value: '',
+			required: true
+		},
+		action: {
+			value: '',
+			required: true
+		}
+	},
+	inputs: 0,
+	outputs: 1,
+	label: function() {
+		return this.name ? this.name : 'Arlo In'
+	},
+	oneditprepare: function() {
+		var node = this
+		if (node.device) $('#node-input-device').append('<option value="' + node.device + '">' + node.device + '</option>')
+		function scanDevices() {
+			var current = $('#node-input-device').val()
+			var config = RED.nodes.node($('#node-input-service').val())
+			if (config && config.id) {
+				$.getJSON('arlo/devices', {
+					service: config.id,
+					type: 'basestation'
+				})
+					.done(function(data) {
+						RED.notify('Devices received.', 'info')
+						$('#node-input-device').find('option').remove()
+						data.forEach(function(device) {
+							$('#node-input-device').append('<option value="' + device.id + '">' + device.name + '</option>')
+						})
+						$('#node-input-device').val(current)
+					})
+					.fail(function(err) {
+						RED.notify(err.responseText, 'error')
+					})
+			}
+		}
+
+		$('#node-input-scandev').click(function() {
+			scanDevices()
+		})
+	}
+  })
+</script>
+
+<script type='text/x-red' data-template-name='arlo-in'>
+  <div class='form-row'>
+    <label for='node-input-service'><i class='fa fa-server'></i> Service</label>
+    <input type='text' id='node-input-service'>
+  </div>
+  <div class='form-row'>
+    <label for='node-input-name'><i class='fa fa-tag'></i> Name</label>
+    <input type='text' id='node-input-name' />
+  </div>
+  <div class='form-row'>
+    <label for='node-input-device'><i class='fa fa-tasks'></i> Device</label>
+    <select id='node-input-device' name='node-input-device' style='width: 250px;'>
+    </select>
+    <button type='button' id='node-input-scandev' class='btn'><i class='icon-search'></i></button>
+  </div>
+  <div class='form-row'>
+    <label for='node-input-action'><i class='fa fa-tasks'></i> Action</label>
+    <select id='node-input-action' name='node-input-action' style='width: 250px;'>
+	<option value="state-change">state-change</option>
+	<option value="motion-detected">motion-detected</option>
+	<option value="audio-detected">audio-detected</option>
+	<option value="low-battery">low-battery</option>
+    </select>
+  </div>
+</script>
+
+
+<script type='text/javascript'>
+  RED.nodes.registerType('arlo-out', {
+	category: 'arlo',
+	paletteLabel: 'Arlo Out',
+	color: '#06a84e',
+	defaults: {
+		name: {
+			value: '',
+			require: false
+		},
+		service: {
+			type: 'arlo-config',
+			require: true
+		},
+		device: {
+			value: '',
+			require: true
+		}
+	},
+	inputs: 1,
+	outputs: 1,
+	label: function() {
+		return this.name ? this.name : 'Arlo Out'
+	},
+	oneditprepare: function() {
+		var node = this
+		if (node.device) $('#node-input-device').append('<option value="' + node.device + '">' + node.device + '</option>')
+		function scanDevices() {
+			var current = $('#node-input-device').val()
+			var config = RED.nodes.node($('#node-input-service').val())
+			if (config && config.id) {
+				$.getJSON('arlo/devices', {
+					service: config.id
+				})
+					.done(function(data) {
+						RED.notify('Devices received.', 'info')
+						$('#node-input-device').find('option').remove()
+						data.forEach(function(device) {
+							$('#node-input-device').append('<option value="' + device.id + '">' + device.name + '</option>')
+						})
+						$('#node-input-device').val(current)
+					})
+					.fail(function(err) {
+						RED.notify(err.responseText, 'error')
+					})
+			}
+		}
+
+		$('#node-input-scandev').click(function() {
+			scanDevices()
+		})
+	}
+  })
+</script>
+
+<script type='text/x-red' data-template-name='arlo-out'>
+  <div class='form-row'>
+    <label for='node-input-service'><i class='fa fa-server'></i> Service</label>
+    <input type='text' id='node-input-service'>
+  </div>
+  <div class='form-row'>
+    <label for='node-input-name'><i class='fa fa-tag'></i> Name</label>
+    <input type='text' id='node-input-name' />
+  </div>
+  <div class='form-row'>
+    <label for='node-input-device'><i class='fa fa-tasks'></i> Basestation</label>
+    <select id='node-input-device' name='node-input-device' style='width: 250px;'>
+    </select>
+    <button type='button' id='node-input-scandev' class='btn'><i class='icon-search'></i></button>
+  </div>
+</script>
+
+<script type='text/javascript'>
+  RED.nodes.registerType('arlo-stream', {
+	category: 'arlo',
+	paletteLabel: 'Arlo Stream',
+	color: '#06a84e',
+	defaults: {
+		name: {
+			value: '',
+			require: false
+		},
+		service: {
+			type: 'arlo-config',
+			require: true
+		},
+		device: {
+			value: '',
+			require: true
+		}
+	},
+	inputs: 1,
+	outputs: 1,
+	label: function() {
+		return this.name ? this.name : 'Arlo Stream'
+	},
+	oneditprepare: function() {
+		var node = this
+		if (node.device) $('#node-input-device').append('<option value="' + node.device + '">' + node.device + '</option>')
+		function scanDevices() {
+			var current = $('#node-input-device').val()
+			var config = RED.nodes.node($('#node-input-service').val())
+			if (config && config.id) {
+				$.getJSON('arlo/devices', {
+					service: config.id,
+					type: 'camera'
+				})
+					.done(function(data) {
+						RED.notify('Devices received.', 'info')
+						$('#node-input-device').find('option').remove()
+						data.forEach(function(device) {
+							$('#node-input-device').append('<option value="' + device.id + '">' + device.name + '</option>')
+						})
+						$('#node-input-device').val(current)
+					})
+					.fail(function(err) {
+						RED.notify(err.responseText, 'error')
+					})
+			}
+		}
+
+		$('#node-input-scandev').click(function() {
+			scanDevices()
+		})
+	}
+  })
+</script>
+<script type='text/x-red' data-template-name='arlo-stream'>
+  <div class='form-row'>
+    <label for='node-input-service'><i class='fa fa-server'></i> Service</label>
+    <input type='text' id='node-input-service'>
+  </div>
+  <div class='form-row'>
+    <label for='node-input-name'><i class='fa fa-tag'></i> Name</label>
+    <input type='text' id='node-input-name' />
+  </div>
+  <div class='form-row'>
+    <label for='node-input-device'><i class='fa fa-tasks'></i> Device</label>
+    <select id='node-input-device' name='node-input-device' style='width: 250px;'>
+    </select>
+    <button type='button' id='node-input-scandev' class='btn'><i class='icon-search'></i></button>
+  </div>
+</script>
+
+
+<script type='text/javascript'>
+  RED.nodes.registerType('arlo-snapshot', {
+	category: 'arlo',
+	paletteLabel: 'Arlo Snapshot',
+	color: '#06a84e',
+	defaults: {
+		name: {
+			value: '',
+			require: false
+		},
+		service: {
+			type: 'arlo-config',
+			require: true
+		},
+		device: {
+			value: '',
+			require: true
+		}
+	},
+	inputs: 1,
+	outputs: 1,
+	label: function() {
+		return this.name ? this.name : 'Arlo Snapshot'
+	},
+	oneditprepare: function() {
+		var node = this
+		if (node.device) $('#node-input-device').append('<option value="' + node.device + '">' + node.device + '</option>')
+		function scanDevices() {
+			var current = $('#node-input-device').val()
+			var config = RED.nodes.node($('#node-input-service').val())
+			if (config && config.id) {
+				$.getJSON('arlo/devices', {
+					service: config.id,
+					type: 'camera'
+				})
+					.done(function(data) {
+						RED.notify('Devices received.', 'info')
+						$('#node-input-device').find('option').remove()
+						data.forEach(function(device) {
+							$('#node-input-device').append('<option value="' + device.id + '">' + device.name + '</option>')
+						})
+						$('#node-input-device').val(current)
+					})
+					.fail(function(err) {
+						RED.notify(err.responseText, 'error')
+					})
+			}
+		}
+
+		$('#node-input-scandev').click(function() {
+			scanDevices()
+		})
+	}
+  })
+</script>
+<script type='text/x-red' data-template-name='arlo-snapshot'>
+  <div class='form-row'>
+    <label for='node-input-service'><i class='fa fa-server'></i> Service</label>
+    <input type='text' id='node-input-service'>
+  </div>
+  <div class='form-row'>
+    <label for='node-input-name'><i class='fa fa-tag'></i> Name</label>
+    <input type='text' id='node-input-name' />
+  </div>
+  <div class='form-row'>
+    <label for='node-input-device'><i class='fa fa-tasks'></i> Device</label>
+    <select id='node-input-device' name='node-input-device' style='width: 250px;'>
+    </select>
+    <button type='button' id='node-input-scandev' class='btn'><i class='icon-search'></i></button>
+  </div>
+</script>

@@ -1,0 +1,17 @@
+{
+ "name": "node-red-contrib-arlo",
+ "version": "0.0.1",
+ "description": "Netgear Arlo Webcam Node-Red node",
+ "main": "index.js",
+ "scripts": {},
+ "author": "Hendrik Roth <hi@hendrikroth.com>",
+ "license": "MIT",
+ "node-red": {
+  "nodes": {
+   "arlo": "arlo.js"
+  }
+ },
+ "dependencies": {
+  "node-arlo": "0.0.2"
+ }
+}
