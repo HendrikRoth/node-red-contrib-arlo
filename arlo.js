@@ -128,15 +128,35 @@ module.exports = function(RED) {
 
 	function ArloIn(n) {
 		var self = this
+		var actions = {
+			'state-changed': 'stateChanged',
+			'motion-detected': 'motionDetected'
+		}
+
 		RED.nodes.createNode(self, n)
 		self.config = RED.nodes.getNode(n.service)
 
 		self.config.on('statusUpdate', function() {
 			if (self.config.state === 'ready' && self.config.arlo) {
 				var device = self.config.arlo.devices[n.device]
-				device.on('statusUpdate', function(msg) {
-					self.send(msg)
-				})
+				var msg = {}
+
+				if (n.action === 'state-change') {
+					device.on('mode0', function() {
+						// disarmed
+						msg.payload = false
+						self.send(msg)
+					})
+					device.on('mode1', function() {
+						// armed
+						msg.payload = true
+						self.send(msg)
+					})
+				} else {
+					device.on(actions[n.action], function(msg) {
+						self.send(msg)
+					})
+				}
 			}
 		})
 

@@ -1,6 +1,6 @@
 {
  "name": "node-red-contrib-arlo",
- "version": "0.0.1",
+ "version": "0.0.2",
  "description": "Netgear Arlo Webcam Node-Red node",
  "main": "index.js",
  "scripts": {},
@@ -12,6 +12,10 @@
   }
  },
  "dependencies": {
-  "node-arlo": "0.0.2"
+  "node-arlo": "0.0.4"
+ },
+ "keywords": {
+	"node-red",
+	"arlo"
  }
 }
