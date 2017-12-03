@@ -14,8 +14,8 @@
  "dependencies": {
   "node-arlo": "0.0.4"
  },
- "keywords": {
+ "keywords": [
 	"node-red",
 	"arlo"
- }
+ ]
 }
