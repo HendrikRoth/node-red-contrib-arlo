@@ -15,6 +15,8 @@
 				type: 'password'
 			}
 		},
+		color: '#06a84e',
+		icon: 'arlo.png',
 		label: function() {
 			return this.name ? this.name : 'Arlo'
 		}
@@ -40,7 +42,6 @@
   RED.nodes.registerType('arlo-in', {
 	category: 'arlo',
 	paletteLabel: 'Arlo In',
-	color: '#06a84e',
 	defaults: {
 		name: {
 			value: '',
@@ -61,6 +62,8 @@
 	},
 	inputs: 0,
 	outputs: 1,
+	color: '#06a84e',
+	icon: 'arlo.png',
 	label: function() {
 		return this.name ? this.name : 'Arlo In'
 	},
@@ -127,7 +130,6 @@
   RED.nodes.registerType('arlo-out', {
 	category: 'arlo',
 	paletteLabel: 'Arlo Out',
-	color: '#06a84e',
 	defaults: {
 		name: {
 			value: '',
@@ -143,11 +145,14 @@
 		}
 	},
 	inputs: 1,
-	outputs: 1,
+	outputs: 0,
+	align: 'right',
+	color: '#06a84e',
+	icon: 'arlo.png',
 	label: function() {
 		return this.name ? this.name : 'Arlo Out'
 	},
-	oneditprepare: function() {
+oneditprepare: function() {
 		var node = this
 		if (node.device) $('#node-input-device').append('<option value="' + node.device + '">' + node.device + '</option>')
 		function scanDevices() {
@@ -199,7 +204,6 @@
   RED.nodes.registerType('arlo-stream', {
 	category: 'arlo',
 	paletteLabel: 'Arlo Stream',
-	color: '#06a84e',
 	defaults: {
 		name: {
 			value: '',
@@ -216,6 +220,8 @@
 	},
 	inputs: 1,
 	outputs: 1,
+	color: '#06a84e',
+	icon: 'arlo.png',
 	label: function() {
 		return this.name ? this.name : 'Arlo Stream'
 	},
@@ -272,7 +278,6 @@
   RED.nodes.registerType('arlo-snapshot', {
 	category: 'arlo',
 	paletteLabel: 'Arlo Snapshot',
-	color: '#06a84e',
 	defaults: {
 		name: {
 			value: '',
@@ -289,6 +294,8 @@
 	},
 	inputs: 1,
 	outputs: 1,
+	color: '#06a84e',
+	icon: 'arlo.png',
 	label: function() {
 		return this.name ? this.name : 'Arlo Snapshot'
 	},

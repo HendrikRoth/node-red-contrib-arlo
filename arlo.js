@@ -139,23 +139,25 @@ module.exports = function(RED) {
 		self.config.on('statusUpdate', function() {
 			if (self.config.state === 'ready' && self.config.arlo) {
 				var device = self.config.arlo.devices[n.device]
-				var msg = {}
+				if (device) {
+					var msg = {}
 
-				if (n.action === 'state-change') {
-					device.on('mode0', function() {
-						// disarmed
-						msg.payload = false
-						self.send(msg)
-					})
-					device.on('mode1', function() {
-						// armed
-						msg.payload = true
-						self.send(msg)
-					})
-				} else {
-					device.on(actions[n.action], function(msg) {
-						self.send(msg)
-					})
+					if (n.action === 'state-change') {
+						device.on('mode0', function() {
+							// disarmed
+							msg.payload = false
+							self.send(msg)
+						})
+						device.on('mode1', function() {
+							// armed
+							msg.payload = true
+							self.send(msg)
+						})
+					} else {
+						device.on(actions[n.action], function(msg) {
+							self.send(msg)
+						})
+					}
 				}
 			}
 		})
