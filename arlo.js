@@ -119,22 +119,33 @@ module.exports = function(RED) {
                     }
                     case "mode":
                     default: {
-                        if (msg.payload) {
-                            device.arm(function(body) {
+                        if (typeof msg.payload == "string") {
+                            device.setMode(msg.payload, function(body) {
                                 if (!body.success) {
                                     self.error(body)
                                 } else {
                                     self.send(msg)
                                 }
                             })
-                        } else {
-                            device.disarm(function(body) {
-                                if (!body.success) {
-                                    self.error(body)
-                                } else {
-                                    self.send(msg)
-                                }
-                            })
+                        }
+                        else {
+                            if (msg.payload) {
+                                device.arm(function(body) {
+                                    if (!body.success) {
+                                        self.error(body)
+                                    } else {
+                                        self.send(msg)
+                                    }
+                                })
+                            } else {
+                                device.disarm(function(body) {
+                                    if (!body.success) {
+                                        self.error(body)
+                                    } else {
+                                        self.send(msg)
+                                    }
+                                })
+                            }
                         }
                         break
                     }
