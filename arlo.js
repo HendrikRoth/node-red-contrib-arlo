@@ -95,24 +95,61 @@ module.exports = function(RED) {
 
 				var device = self.config.arlo.devices[n.device]
 
-				if (msg.payload) {
-					device.arm(function(body) {
-						if (!body.success) {
-							self.error(body)
-						} else {
-							self.send(msg)
-						}
-					})
-				} else {
-					device.disarm(function(body) {
-						if (!body.success) {
-							self.error(body)
-						} else {
-							self.send(msg)
-						}
-					})
-				}
-
+                switch (msg.topic)
+                {
+                    case "siren": {
+                        if (msg.payload) {
+                            device.alarmOn(function(body) {
+                                if (!body.success) {
+                                    self.error(body)
+                                } else {
+                                    self.send(msg)
+                                }
+                            })
+                        } else {
+                            device.alarmOff(function(body) {
+                                if (!body.success) {
+                                    self.error(body)
+                                } else {
+                                    self.send(msg)
+                                }
+                            })
+                        }
+                        break
+                    }
+                    case "mode":
+                    default: {
+                        if (typeof msg.payload == "string") {
+                            device.setMode(msg.payload, function(body) {
+                                if (!body.success) {
+                                    self.error(body)
+                                } else {
+                                    self.send(msg)
+                                }
+                            })
+                        }
+                        else {
+                            if (msg.payload) {
+                                device.arm(function(body) {
+                                    if (!body.success) {
+                                        self.error(body)
+                                    } else {
+                                        self.send(msg)
+                                    }
+                                })
+                            } else {
+                                device.disarm(function(body) {
+                                    if (!body.success) {
+                                        self.error(body)
+                                    } else {
+                                        self.send(msg)
+                                    }
+                                })
+                            }
+                        }
+                        break
+                    }
+                }
 			} else {
 				self.error('Service not ready')
 				self.config.init()
